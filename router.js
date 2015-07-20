@@ -1,33 +1,65 @@
 var express = require('express');
 var router = express.Router();
-var bodyParser = require('body-parser');
+var Game = require('./models/game-model.js');
 
 router.get('/', function(req, res) {
-  //grab resource from mongo
-  res.json({'msg':'got /games/ route'});
+  Game.find({}, function(err, docs) {
+    if(err) {
+      res.status(400);
+      res.json({'msg': 'failed to retrieve file'})
+    } else {
+      res.json(docs);
+    }
+  });
 });
 
-router.get('/:id', function(req, res) {
-  id = req.params.id;
-  res.json({'msg': 'got /games/' + id + ' route'});
+router.get('/:key', function(req, res) {
+  key = req.params.key;
+  Game.find({key: key}, function(err, docs) {
+    if(err) {
+      res.status(400);
+      res.json({'msg': 'failed to retrieve file'});
+    } else {
+      res.json(docs);
+    }
+  });
 });
+
+//superagent localHost:3000/games post '{"name": "MegaMan X", "genre": "platformer", "rating": 9}'
 
 router.post('/', function(req, res) {
-  res.json({'msg': 'posted to /games/ route'});
+
+  var game = new Game(req.body);
+  //This creates a lowercased, no space string based off of the name passed in. This key is used to access the files
+  game.key = game.name.replace(/\s+/g, '').toLowerCase();
+  game.save(function(err) {
+    if (err) {
+      res.status(400);
+      res.json({'msg': 'failed to save post, try using a different name'});
+    } else {
+      res.json({'msg': 'posted to /games/ route'});
+    }
+  });
 });
 
 
-router.put('/:id', function(req, res) {
-  id = req.params.id;
-  res.json({'msg': 'updated /games/' + id + ' route'});
+router.put('/:key', function(req, res) {
+  key = req.params.key;
+  Game.update({key: key}, {$set: req.body}, function(err, docs) {
+    if (err) {
+      res.status(400);
+      res.json({'msg': 'failed to update'});
+    } else {
+      res.json({'msg': 'update succeeded!'})
+    }
+  });
 });
 
-router['delete']('/:id', function(req, res) {
-  id = req.params.id;
+router['delete']('/:key', function(req, res) {
+  key = req.params.key;
+  Game.find({key: key}).remove().exec();
   res.json({'msg': 'deleted /games/' + id + ' route'});
 });
-
-
 
 
 module.exports = router;
