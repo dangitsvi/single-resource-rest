@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Game = require('./models/game-model.js');
+var Game = require('../models/game-model.js');
 
 router.get('/', function(req, res) {
   Game.find({}, function(err, docs) {

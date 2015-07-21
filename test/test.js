@@ -2,10 +2,10 @@ var chai = require('chai');
 var chaiHttp = require('chai-http');
 var expect = chai.expect;
 var mongoose = require('mongoose');
-var Game = require(__dirname + '/models/game-model.js');
+var Game = require(__dirname + '/../models/game-model.js');
 
 process.env.MONGOLAB_URL = 'mongodb://localhost/test';
-require(__dirname + '/server.js');
+require(__dirname + '/../server.js');
 chai.use(chaiHttp);
 
 describe('server test with a single rest resource', function() {

@@ -3,7 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
-var gamesRoute = require('./router');
+var gamesRoute = require('./router/router.js');
 
 var port = process.env.PORT || 3000;
 
