@@ -6,7 +6,7 @@ router.get('/', function(req, res) {
   Game.find({}, function(err, docs) {
     if(err) {
       res.status(400);
-      res.json({'msg': 'failed to retrieve file'})
+      res.json({'msg': 'failed to retrieve file'});
     } else {
       res.json(docs);
     }
@@ -15,7 +15,7 @@ router.get('/', function(req, res) {
 
 router.get('/:key', function(req, res) {
   key = req.params.key;
-  Game.find({key: key}, function(err, docs) {
+  Game.findOne({key: key}, function(err, docs) {
     if(err) {
       res.status(400);
       res.json({'msg': 'failed to retrieve file'});
@@ -37,7 +37,7 @@ router.post('/', function(req, res) {
       res.status(400);
       res.json({'msg': 'failed to save post, try using a different name'});
     } else {
-      res.json({'msg': 'posted to /games/ route'});
+      res.json({'msg': 'posted to /games/ route', 'key': game.key});
     }
   });
 });
@@ -50,7 +50,7 @@ router.put('/:key', function(req, res) {
       res.status(400);
       res.json({'msg': 'failed to update'});
     } else {
-      res.json({'msg': 'update succeeded!'})
+      res.json({'msg': 'update succeeded!'});
     }
   });
 });
@@ -58,7 +58,7 @@ router.put('/:key', function(req, res) {
 router['delete']('/:key', function(req, res) {
   key = req.params.key;
   Game.find({key: key}).remove().exec();
-  res.json({'msg': 'deleted /games/' + id + ' route'});
+  res.json({'msg': 'deleted /games/' + key + ' route'});
 });
 
 
