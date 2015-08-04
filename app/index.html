@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf8">
+  <title>Game Ratings</title>
+</head>
+<body data-ng-app="gameRatingsApp">
+  <h1>My Game Ratings</h1>
+  <main data-ng-controller="ratingsController">
+    <h2>Game: {{game}}</h2>
+    <p>Genre: {{genre}}</p>
+    <p>Rating: {{rating}}</p>
+    <input type="text" data-ng-model="game">
+    <input type="text" data-ng-model="genre">
+    <input type="text" data-ng-model="rating">
+  </main>
+  <script src="bundle.js"></script>
+</body>
+</html>
