@@ -12,7 +12,6 @@ app.use('/api', gamesRoute);
 
 mongoose.connect(process.env.MONGOLAB_URL || 'mongodb://localhost/games');
 
-
 app.all('*', function(req, res) {
   res.status(404);
   res.json({'msg': 'Error: 404 file not found'});

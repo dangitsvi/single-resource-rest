@@ -30,16 +30,16 @@
       <input type="text" name="newGameName" data-ng-model="newGame.name">
       <label for="newGameGenre">Genre:</label>
       <input type="text" name="newGameGenre" data-ng-model="newGame.genre">
-      <label for="newGameRating">Rating:</label>
-      <input type="text" name="newGameRating" data-ng-model="newGame.rating">
+      <label for="newGameRating">Rating (1-10):</label>
+      <input type="text" name="newGameRating" data-ng-model="newGame.rating"  min="1" max="10">
 
       <button type="submit">submit new game</button>
     </form>
 
     <h3>Games</h3>
     <ul>
-      <li data-ng-repeat="game in games" data-ng-click="readOne(game)">
-        <button>{{game.name}}</button>
+      <li data-ng-repeat="game in games">
+        <button data-ng-click="readOne(game)">{{game.name}}</button>
       </li>
     </ul>
 

@@ -13,9 +13,9 @@ router.get('/games', function(req, res) {
   });
 });
 
-router.get('/games/:key', function(req, res) {
-  key = req.params.key;
-  Game.findOne({key: key}, function(err, doc) {
+router.get('/games/:id', function(req, res) {
+  id = req.params.id;
+  Game.findById(id, function(err, doc) {
     if(err) {
       res.status(400);
       res.json({'msg': 'failed to retrieve file'});
@@ -30,21 +30,21 @@ router.post('/games', function(req, res) {
 
   var game = new Game(req.body);
   //This creates a lowercased, no space string based off of the name passed in. This key is used to access the files
-  game.key = game.name.replace(/\s+/g, '').toLowerCase();
+  // game.key = game.name.replace(/\s+/g, '').toLowerCase();
   game.save(function(err) {
     if (err) {
       res.status(400);
       res.json({'msg': 'failed to save post, try using a different name'});
     } else {
-      res.json({'msg': 'posted to /games/ route', 'key': game.key, 'game': game});
+      res.json({'msg': 'posted to /games/ route', 'game': game});
     }
   });
 });
 
 
-router.put('/games/:key', function(req, res) {
-  key = req.params.key;
-  Game.update({key: key}, {$set: req.body}, function(err, docs) {
+router.put('/games/:id', function(req, res) {
+  id = req.params.id;
+  Game.findByIdAndUpdate(id, {$set: req.body}, function(err, doc) {
     if (err) {
       res.status(400);
       res.json({'msg': 'failed to update'});
@@ -54,10 +54,16 @@ router.put('/games/:key', function(req, res) {
   });
 });
 
-router['delete']('/games/:key', function(req, res) {
-  key = req.params.key;
-  Game.find({key: key}).remove().exec();
-  res.json({'msg': 'deleted /games/' + key + ' route'});
+router['delete']('/games/:id', function(req, res) {
+  id = req.params.id;
+  Game.findByIdAndRemove(id, function(err, doc) {
+    if (err) {
+      res.status(400);
+      res.json({'msg': 'failed to delete'});
+    } else {
+      res.json({'msg': 'deleted game'});
+    }
+  });
 });
 
 

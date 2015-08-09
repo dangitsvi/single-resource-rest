@@ -17,7 +17,7 @@ module.exports = function(app) {
     }
 
     $scope.readOne = function(game) {
-      $http.get('/api/games/' + game.key)
+      $http.get('/api/games/' + game._id)
         .then(function(res) {
           $scope.oneGame = res.data;
         }, function(res) {
@@ -38,9 +38,10 @@ module.exports = function(app) {
     }
 
     $scope.destroy = function(game) {
-      $http.delete('/api/games/' + game.key)
+      $http.delete('/api/games/' + game._id)
         .then(function(res) {
           $scope.games.splice($scope.games.indexOf(game), 1);
+          $scope.oneGame = null;
         }, function(res) {
           console.log(res.data);
           $scope.error.push(res.data);
@@ -48,7 +49,7 @@ module.exports = function(app) {
     }
 
     $scope.update = function(game) {
-      $http.put('/api/games/' + game.key, game)
+      $http.put('/api/games/' + game._id, game)
         .then(function(res) {
           game.editing = false;
         }, function(res) {
