@@ -88,18 +88,60 @@
 	    })
 
 
-	    it('should make a get request with readAll function', function() {
-	      $httpBackend.expectGET('/api/games')
-	        .respond(200, [{name: 'Test Name', key: 'testname'}]);
+	    it('should make a get request with when read all is called', function() {
+	      $httpBackend.expectGET('/api/games').respond(200, [{name: 'Test Name', _id: 1}]);
 	      $scope.readAll();
 	      $httpBackend.flush();
 	      expect($scope.games.length).toBe(1);
 	      expect($scope.games[0].name).toBe('Test Name');
-	      expect($scope.games[0].key).toBe('testname');
-
+	      expect($scope.games[0]._id).toBe(1);
 	    });
-	  });
 
+	    it('should get one game with when readOne is called', function() {
+	      var game = {_id: 1, name:'test name', genre: 'test', rating: 5};
+
+	      $httpBackend.expectGET('/api/games/1').respond(200, game);
+	      $scope.readOne(game);
+	      $httpBackend.flush();
+	      expect($scope.oneGame._id).toBe(1);
+	      expect($scope.oneGame.name).toBe('test name');
+	      expect($scope.oneGame.genre).toBe('test');
+	      expect($scope.oneGame.rating).toBe(5);
+	    });
+
+
+	    it('should make a post request when create is called', function() {
+	      var gamePost = {name: 'Post Test'};
+	      $scope.newGame = gamePost;
+	      $httpBackend.expectPOST('/api/games', gamePost).respond(200, {game: gamePost});
+	      $scope.create(gamePost);
+	      expect($scope.newGame).toBe(null);
+	      $httpBackend.flush()
+	      expect($scope.games.length).toBe(1);
+	      expect($scope.games[0].name).toBe('Post Test');
+	    });
+
+	    it('should make a put request when update is called', function() {
+	      var game = {_id: 1, editing: true};
+	      $httpBackend.expectPUT('/api/games/1', game).respond(200);
+	      $scope.update(game);
+	      $httpBackend.flush();
+	      expect(game.editing).toBe(false);
+	    });
+
+	    it('should get delete request when destroy is called', function() {
+	      var game = {_id: 1, name: 'delete test'};
+	      $scope.games = [{_id: 2, name: 'dummy'}, game];
+	      $httpBackend.expectDELETE('/api/games/1').respond(200);
+	      $scope.destroy(game);
+	      $httpBackend.flush();
+	      expect($scope.games.length).toBe(1);
+	      expect($scope.games.indexOf(game)).toBe(-1);
+	      expect($scope.games[0].name).toBe('dummy');
+	      expect($scope.oneGame).toBe(null);
+	    });
+
+	  });
 	});
 
 
@@ -28519,7 +28561,7 @@
 	    }
 
 	    $scope.readOne = function(game) {
-	      $http.get('/api/games/' + game.key)
+	      $http.get('/api/games/' + game._id)
 	        .then(function(res) {
 	          $scope.oneGame = res.data;
 	        }, function(res) {
@@ -28528,10 +28570,11 @@
 	        });
 	    }
 
-	    $scope.create = function(game) {
-	      $scope.newGame= null;
-	      $http.post('/api/games', game)
+	    $scope.create = function(newGame) {
+	      $scope.newGame = null;
+	      $http.post('/api/games', newGame)
 	        .then(function(res) {
+	          console.log(res.data);
 	          $scope.games.push(res.data.game);
 	        }, function(res) {
 	          console.log(res.data);
@@ -28540,7 +28583,7 @@
 	    }
 
 	    $scope.destroy = function(game) {
-	      $http.delete('/api/games/' + game.key)
+	      $http.delete('/api/games/' + game._id)
 	        .then(function(res) {
 	          $scope.games.splice($scope.games.indexOf(game), 1);
 	          $scope.oneGame = null;
@@ -28551,7 +28594,7 @@
 	    }
 
 	    $scope.update = function(game) {
-	      $http.put('/api/games/' + game.key, game)
+	      $http.put('/api/games/' + game._id, game)
 	        .then(function(res) {
 	          game.editing = false;
 	        }, function(res) {

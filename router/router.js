@@ -29,6 +29,7 @@ router.get('/games/:id', function(req, res) {
 router.post('/games', function(req, res) {
 
   var game = new Game(req.body);
+  console.log(req.body);
   //This creates a lowercased, no space string based off of the name passed in. This key is used to access the files
   // game.key = game.name.replace(/\s+/g, '').toLowerCase();
   game.save(function(err) {

@@ -26,10 +26,11 @@ module.exports = function(app) {
         });
     }
 
-    $scope.create = function(game) {
-      $scope.newGame= null;
-      $http.post('/api/games', game)
+    $scope.create = function(newGame) {
+      $scope.newGame = null;
+      $http.post('/api/games', newGame)
         .then(function(res) {
+          console.log(res.data);
           $scope.games.push(res.data.game);
         }, function(res) {
           console.log(res.data);
