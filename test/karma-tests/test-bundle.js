@@ -54,7 +54,7 @@
 	'use strict'
 
 	__webpack_require__(2);
-	__webpack_require__(6);
+	__webpack_require__(8);
 
 	describe('games controller', function() {
 	  var $ControllerConstructor;
@@ -152,10 +152,11 @@
 	'use strict'
 
 	__webpack_require__(3);
+	__webpack_require__(4)
 
-	var gameRatingsApp = angular.module('gameRatingsApp', []);
+	var gameRatingsApp = angular.module('gameRatingsApp', ['services']);
 
-	__webpack_require__(4)(gameRatingsApp);
+	__webpack_require__(6)(gameRatingsApp);
 
 
 /***/ },
@@ -28531,11 +28532,10 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	'use strict'
 
-	module.exports = function(app) {
-	  __webpack_require__(5)(app);
-	}
+	var services = module.exports = exports = angular.module('services', []);
+	__webpack_require__(5)(services);
 
 
 /***/ },
@@ -28543,64 +28543,147 @@
 /***/ function(module, exports) {
 
 	'use strict'
+	module.exports = function(app) {
+	  app.factory('RESTResource', ['$http', function($http) {
+
+	    var handleError = function(callback) {
+	      return function(res) {
+	        console.log(res.data);
+	        callback(res.data);
+	      };
+	    };
+
+	    var handleSuccess = function(callback) {
+	      return function(res) {
+	        callback(null, res.data);
+	      };
+	    };
+
+	    return function(resourceName) {
+	      var handleRequest = function(method, data, callback) {
+	        var url = '/api/' + resourceName;
+	        if (data && data._id) url += '/' + data._id;
+	        $http({
+	          method:method,
+	          url:url,
+	          data:data
+	        })
+	         .then(handleSuccess(callback), handleError(callback))
+	      };
+
+	      return {
+	        readAll: function(callback) {
+	          handleRequest('GET', null, callback);
+	        },
+
+	        readOne: function(data, callback) {
+	          handleRequest('GET', data, callback);
+	        },
+
+	        create: function(data, callback) {
+	          handleRequest('POST', data, callback);
+	        },
+
+	        update: function(data, callback) {
+	          handleRequest('PUT', data, callback);
+	        },
+
+	        destroy: function(data, callback) {
+	          handleRequest('DELETE', data, callback);
+	        }
+	      }
+	    }
+	  }]);
+	};
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	module.exports = function(app) {
-	  app.controller('gamesController', ['$scope', '$http', function($scope, $http) {
+	  __webpack_require__(7)(app);
+	}
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	'use strict'
+
+	module.exports = function(app) {
+	  app.controller('gamesController', ['$scope', '$http', 'RESTResource', function($scope, $http, resource) {
 
 	    $scope.games = [];
 	    $scope.error = [];
+	    var Game = new resource('games');
+
 
 	    $scope.readAll = function() {
-	      $http.get('/api/games')
-	        .then(function(res) {
-	          $scope.games = res.data;
-	        }, function(res) {
-	          $scope.error.push(res.data);
-	          console.log(res.data);
-	        });
+	      Game.readAll(function(err, data) {
+	        if(err) return $scope.error.push(err);
+	        $scope.games = data;
+
+	      })
+
+	      // $http.get('/api/games')
+	      //   .then(function(res) {
+	      //     $scope.games = res.data;
+	      //   }, function(res) {
+	      //     $scope.error.push(res.data);
+	      //     console.log(res.data);
+	      //   });
 	    }
 
 	    $scope.readOne = function(game) {
-	      $http.get('/api/games/' + game._id)
-	        .then(function(res) {
-	          $scope.oneGame = res.data;
-	        }, function(res) {
-	          $scope.error.push(res.data);
-	          console.log(res.data);
-	        });
+	      Game.readOne(game, function(err, data) {
+	        if(err) return $scope.error.push(err);
+	        $scope.oneGame = data;
+	      })
+
+	      // $http.get('/api/games/' + game._id)
+	      //   .then(function(res) {
+	      //     $scope.oneGame = res.data;
+	      //   }, function(res) {
+	      //     $scope.error.push(res.data);
+	      //     console.log(res.data);
+	      //   });
 	    }
 
 	    $scope.create = function(newGame) {
 	      $scope.newGame = null;
-	      $http.post('/api/games', newGame)
-	        .then(function(res) {
-	          console.log(res.data);
-	          $scope.games.push(res.data.game);
-	        }, function(res) {
-	          console.log(res.data);
-	          $scope.error.push(res.data);
-	        });
+	      Game.create(newGame, function(err, data) {
+	        if(err) return $scope.error.push(err);
+	        $scope.games.push(data.game);
+	      });
+
 	    }
 
 	    $scope.destroy = function(game) {
-	      $http.delete('/api/games/' + game._id)
-	        .then(function(res) {
-	          $scope.games.splice($scope.games.indexOf(game), 1);
-	          $scope.oneGame = null;
-	        }, function(res) {
-	          console.log(res.data);
-	          $scope.error.push(res.data);
-	        });
+	      Game.destroy(game, function(err, data) {
+	        if(err) return $scope.error.push(err);
+	        $scope.games.splice($scope.games.indexOf(game), 1);
+	        $scope.oneGame = null;
+	      })
 	    }
 
 	    $scope.update = function(game) {
-	      $http.put('/api/games/' + game._id, game)
-	        .then(function(res) {
-	          game.editing = false;
-	        }, function(res) {
-	          console.log(res.data);
-	          game.editing = false;
-	        });
+
+	      Game.update(game, function(err, data) {
+	        game.editing = false;
+	        if(err) return $scope.error.push(game);
+	      })
+
+	      // $http.put('/api/games/' + game._id, game)
+	      //   .then(function(res) {
+	      //     game.editing = false;
+	      //   }, function(res) {
+	      //     console.log(res.data);
+	      //     game.editing = false;
+	      //   });
 	    }
 
 	  }]);
@@ -28608,7 +28691,7 @@
 
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
