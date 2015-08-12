@@ -53,7 +53,7 @@ gulp.task('karmatest', ['webpack:test'], function(done) {
 });
 
 gulp.task('build', ['webpack:dev', 'copy']);
-gulp.task('default', ['test', 'lint']);
+gulp.task('default', [ 'test','lint']);
 
 
 

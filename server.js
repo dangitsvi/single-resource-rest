@@ -10,7 +10,7 @@ app.use(express.static(__dirname + '/build'));
 app.use(bodyParser.json());
 app.use('/api', gamesRoute);
 
-mongoose.connect(process.env.MONGOLAB_URL || 'mongodb://localhost/games');
+mongoose.connect(process.env.MONGOLAB_URL || 'mongodb://localhost/game_review');
 
 app.all('*', function(req, res) {
   res.status(404);

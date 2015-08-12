@@ -1,63 +1,48 @@
 'use strict'
 
 module.exports = function(app) {
-  app.controller('gamesController', ['$scope', '$http', function($scope, $http) {
+  app.controller('gamesController', ['$scope', '$http', 'RESTResource', function($scope, $http, resource) {
 
     $scope.games = [];
     $scope.error = [];
+    var Game = new resource('games');
 
     $scope.readAll = function() {
-      $http.get('/api/games')
-        .then(function(res) {
-          $scope.games = res.data;
-        }, function(res) {
-          $scope.error.push(res.data);
-          console.log(res.data);
-        });
-    }
+      Game.readAll(function(err, data) {
+        if(err) return $scope.error.push(err);
+        $scope.games = data;
+      });
+    };
 
     $scope.readOne = function(game) {
-      $http.get('/api/games/' + game._id)
-        .then(function(res) {
-          $scope.oneGame = res.data;
-        }, function(res) {
-          $scope.error.push(res.data);
-          console.log(res.data);
-        });
-    }
+      Game.readOne(game, function(err, data) {
+        if(err) return $scope.error.push(err);
+        $scope.oneGame = data;
+      });
+    };
 
     $scope.create = function(newGame) {
       $scope.newGame = null;
-      $http.post('/api/games', newGame)
-        .then(function(res) {
-          console.log(res.data);
-          $scope.games.push(res.data.game);
-        }, function(res) {
-          console.log(res.data);
-          $scope.error.push(res.data);
-        });
-    }
+      Game.create(newGame, function(err, data) {
+        if(err) return $scope.error.push(err);
+        $scope.games.push(data.game);
+      });
+    };
 
     $scope.destroy = function(game) {
-      $http.delete('/api/games/' + game._id)
-        .then(function(res) {
-          $scope.games.splice($scope.games.indexOf(game), 1);
-          $scope.oneGame = null;
-        }, function(res) {
-          console.log(res.data);
-          $scope.error.push(res.data);
-        });
-    }
+      Game.destroy(game, function(err, data) {
+        if(err) return $scope.error.push(err);
+        $scope.games.splice($scope.games.indexOf(game), 1);
+        $scope.oneGame = null;
+      });
+    };
 
     $scope.update = function(game) {
-      $http.put('/api/games/' + game._id, game)
-        .then(function(res) {
-          game.editing = false;
-        }, function(res) {
-          console.log(res.data);
-          game.editing = false;
-        });
-    }
 
+      Game.update(game, function(err, data) {
+        game.editing = false;
+        if(err) return $scope.error.push(game);
+      });
+    };
   }]);
-}
+};

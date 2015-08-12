@@ -30,12 +30,10 @@ router.post('/games', function(req, res) {
 
   var game = new Game(req.body);
   console.log(req.body);
-  //This creates a lowercased, no space string based off of the name passed in. This key is used to access the files
-  // game.key = game.name.replace(/\s+/g, '').toLowerCase();
-  game.save(function(err) {
+  game.save(function(err, game) {
     if (err) {
-      res.status(400);
-      res.json({'msg': 'failed to save post, try using a different name'});
+      console.log(err);
+      res.status(400).json({msg: 'failed to save post'});
     } else {
       res.json({'msg': 'posted to /games/ route', 'game': game});
     }

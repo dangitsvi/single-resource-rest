@@ -14,6 +14,7 @@ var deleteGameId;
 describe('server test with a single rest resource', function() {
   //before all test, create dummy data in test server
   before(function(done) {
+      mongoose.connection.db.dropDatabase();//clear old tests
       var game = new Game({"name": "Dummy Name", "genre": "dumb", "rating": "3"});
       game.save();
       id = game._id;
