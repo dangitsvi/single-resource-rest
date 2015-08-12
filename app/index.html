@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf8">
+  <title>Game Ratings</title>
+</head>
+<body data-ng-app="gameRatingsApp">
+  <h1>My Game Ratings</h1>
+  <main data-ng-controller="gamesController" data-ng-init="readAll()">
+
+    <section>
+      <h2>{{oneGame.name|| 'Click on a game to show rating'}}</h2>
+      <p data-ng-if="oneGame">Genre: {{oneGame.genre}}</p>
+      <p data-ng-if="oneGame">Rating: {{oneGame.rating}}</p>
+      <button data-ng-if="oneGame" data-ng-click="destroy(oneGame)">delete</button>
+      <button data-ng-if="!oneGame.editing && oneGame" data-ng-click="oneGame.editing = true">Edit</button>
+      <form data-ng-if="oneGame.editing" name="update form" data-ng-submit="update(oneGame)">
+        <label for="updateGenre">New Genre:</label>
+        <input type="text" name="updateGenre" data-ng-model="oneGame.genre">
+        <label for="updateRating">New Rating:</label>
+        <input type="text" name="updateRating" data-ng-model="oneGame.rating">
+        <button type="submit">Save</button>
+        <button data-ng-click ="oneGame.editing = false; readOne(oneGame)" >Cancel</button>
+      </form>
+    </section>
+
+    <h3>Add your game rating</h3>
+    <form name="newGameRating" data-ng-submit="create(newGame)">
+      <label for="newGameName">Name:</label>
+      <input type="text" name="newGameName" data-ng-model="newGame.name">
+      <label for="newGameGenre">Genre:</label>
+      <input type="text" name="newGameGenre" data-ng-model="newGame.genre">
+      <label for="newGameRating">Rating (1-10):</label>
+      <input type="text" name="newGameRating" data-ng-model="newGame.rating">
+
+      <button type="submit">submit new game</button>
+    </form>
+
+    <h3>Games</h3>
+    <ul>
+      <li data-ng-repeat="game in games">
+        <button data-ng-click="readOne(game)">{{game.name}}</button>
+      </li>
+    </ul>
+
+  </main>
+
+  <script src="bundle.js"></script>
+</body>
+</html>
+
+

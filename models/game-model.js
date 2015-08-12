@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 var gameSchema = mongoose.Schema({
   name: {type: String, unique: true},
   genre: String,
-  rating: Number,
-  key: {type: String, unique: true}
+  rating: Number
+  // key: {type: String, unique: true}
 });
 
 gameSchema.path("rating").validate(function(v) {
